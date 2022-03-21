@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { TutorialService } from 'src/app/services/tutorial.service';
+import { ContactService } from 'src/app/services/tutorial.service';
 
 @Component({
   selector: 'app-tutorials-list',
@@ -8,28 +8,29 @@ import { TutorialService } from 'src/app/services/tutorial.service';
 })
 export class TutorialsListComponent implements OnInit {
 
-  tutorials: any;
-  currentTutorial = null;
+  contacts: any;
+  currentContact = null;
   currentIndex = -1;
   title = '';
+  country="";
 
-  page = 1;
+  page = 0;
   count = 0;
-  pageSize = 3;
-  pageSizes = [3, 6, 9];
+  pageSize = 10;
+  pageSizes = [10, 20, 30, 40, 50];
 
-  constructor(private tutorialService: TutorialService) { }
+  constructor(private tutorialService: ContactService) { }
 
   ngOnInit(): void {
     this.retrieveTutorials();
   }
 
-  getRequestParams(searchTitle, page, pageSize): any {
+  getRequestParams(country, page, pageSize): any {
     // tslint:disable-next-line:prefer-const
     let params = {};
 
-    if (searchTitle) {
-      params[`title`] = searchTitle;
+    if (country != "") {
+      params[`country`] = country;
     }
 
     if (page) {
@@ -44,23 +45,42 @@ export class TutorialsListComponent implements OnInit {
   }
 
   retrieveTutorials(): void {
-    const params = this.getRequestParams(this.title, this.page, this.pageSize);
-
-    this.tutorialService.getAll(params)
+    const params = this.getRequestParams(this.country, this.page, this.pageSize);
+      if(this.country != ""){
+        this.tutorialService.getAll(params)
+        .subscribe(
+          response => {
+            //const { content, totalElements } = response;
+            this.contacts = response;
+            this.count = response.length;
+            console.log(response);
+          },
+          error => {
+            console.log(error);
+          });
+    }else{
+      this.tutorialService.getAll(params)
       .subscribe(
         response => {
-          const { tutorials, totalItems } = response;
-          this.tutorials = tutorials;
-          this.count = totalItems;
+          const { content, totalElements } = response;
+          this.contacts = content;
+          this.count = totalElements;
           console.log(response);
         },
         error => {
           console.log(error);
         });
+    }
   }
+
+  onChange(newValue) {
+    this.country = newValue;
+    const params = this.getRequestParams(this.country, this.page, this.pageSize);
+}
 
   handlePageChange(event): void {
     this.page = event;
+    console.log(event)
     this.retrieveTutorials();
   }
 
@@ -68,22 +88,5 @@ export class TutorialsListComponent implements OnInit {
     this.pageSize = event.target.value;
     this.page = 1;
     this.retrieveTutorials();
-  }
-
-  setActiveTutorial(tutorial, index): void {
-    this.currentTutorial = tutorial;
-    this.currentIndex = index;
-  }
-
-  removeAllTutorials(): void {
-    this.tutorialService.deleteAll()
-      .subscribe(
-        response => {
-          console.log(response);
-          this.retrieveTutorials();
-        },
-        error => {
-          console.log(error);
-        });
   }
 }
