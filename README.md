@@ -3,6 +3,7 @@
 For more detail, please visit:
 
 > Angular 10 Pagination example using ngx-pagination
+![Screenshot (218)](https://user-images.githubusercontent.com/33205781/159361770-a5182a6c-7809-48c7-89a8-a87f26c4bff2.png)
 
 
 ## Development server
