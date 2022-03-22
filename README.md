@@ -4,6 +4,9 @@ For more detail, please visit:
 
 > Angular 10 Pagination example using ngx-pagination
 
+```
+
+```
 
 ## Development server
 
